@@ -1,556 +1,737 @@
-module.exports = () => {
+module.exports = ({
+  invoiceNumber,
+  companyName,
+  city,
+  street,
+  state,
+  zip,
+  gstin,
+  items,
+}) => {
   const today = new Date();
+
+  function getDeliveryItemsHTML(items) {
+    let data = '';
+    for (let i = 0; i < 4; i++) {
+      data += `
+           <tr style="height: 48pt">
+            <td class="tableStyleBorder" style="width: 20pt">
+              <p
+                class="s2"
+                style="padding-top: 1pt; text-indent: 0pt; text-align: center"
+              >
+                2
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 111pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-left: 4pt;
+                  padding-right: 9pt;
+                  text-indent: 0pt;
+                  text-align: left;
+                "
+              >
+                Magmus 3&quot; S.S. Butt Door Hinges - Welded Soft Movement Matt
+                3&quot; x 16 <span class="s8">SKU : MAG-100141.00</span>
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 39pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-left: 4pt;
+                  text-indent: 0pt;
+                  text-align: left;
+                "
+              >
+                830210
+              </p>
+              <p
+                class="s2"
+                style="padding-left: 4pt; text-indent: 0pt; text-align: left"
+              >
+                10
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 44pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-left: 19pt;
+                  text-indent: 0pt;
+                  text-align: left;
+                "
+              >
+                10.00
+              </p>
+              <p
+                class="s2"
+                style="padding-left: 27pt; text-indent: 0pt; text-align: left"
+              >
+                Pcs
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 43pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-right: 3pt;
+                  text-indent: 0pt;
+                  text-align: right;
+                "
+              >
+                200.00
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 42pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-left: 12pt;
+                  text-indent: 0pt;
+                  text-align: left;
+                "
+              >
+                40.00%
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 45pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-right: 3pt;
+                  text-indent: 0pt;
+                  text-align: right;
+                "
+              >
+                9%
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 44pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-right: 3pt;
+                  text-indent: 0pt;
+                  text-align: right;
+                "
+              >
+                108.00
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 43pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-right: 3pt;
+                  text-indent: 0pt;
+                  text-align: right;
+                "
+              >
+                9%
+              </p>
+            </td>
+            <td class="tableStyleBorder" style="width: 43pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-right: 3pt;
+                  text-indent: 0pt;
+                  text-align: right;
+                "
+              >
+                108.00
+              </p>
+            </td>
+            <td  class="tableStyleBorder" style="width: 52pt">
+              <p
+                class="s2"
+                style="
+                  padding-top: 1pt;
+                  padding-right: 3pt;
+                  text-indent: 0pt;
+                  text-align: right;
+                "
+              >
+                1,200.00
+              </p>
+            </td>
+          </tr>
+    `;
+    }
+    return data;
+  }
   return `
   <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="en">
   <head>
-    <title></title>
-
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <br />
-    <style type="text/css">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>invoice PDF</title>
+    <style>
       p {
-        margin: 0;
-        padding: 0;
+        margin: 0px;
       }
-      .ft10 {
-        font-size: 11px;
-        font-family: sans-serif;
-        color: #000000;
+      main {
+        width: 100%;
+        margin: 60px 40px;
+        border: 1px solid black;
       }
-      .ft11 {
-        font-size: 11px;
-        font-family: sans-serif;
-        color: #000000;
+      header {
+        width: 100%;
+        height: 200px;
+        border-bottom: 1px solid black;
       }
-      .ft12 {
-         font-size: 11px;
-        font-family: sans-serif;
-        color: #000000;
+      .verticalLine {
+        border-left: 1px solid black;
+        height: 223px;
+        position: absolute;
+        top: 261px;
+        left: 494px;
       }
-      .ft13 {
-        font-size: 11px;
-        font-family: sans-serif;
-        color: #000000;
+      .logo {
+        position: absolute;
+        top: 143px;
+        left: 74px;
       }
-      .ft14 {
-        font-size: 18px;
-        font-family: sans-serif;
-        color: #000000;
+      .CompanyInfo {
+        position: absolute;
+        left: 271px;
+        top: 98px;
+        line-height: 1.4;
       }
-      .ft15 {
-        font-size: 33px;
-        font-family: sans-serif;
-        color: #000000;
+      .perfor {
+        position: absolute;
+        font-size: 31px;
+        top: 216px;
+        left: 699px;
       }
-      .ft16 {
-        font-size: 11px;
-        font-family: sans-serif;
-        color: #333333;
+
+      .billID {
+        width: 100%;
+        height: 50px;
+        border-bottom: 1px solid black;
       }
-      .ft17 {
-        font-size: 11px;
-        font-family: sans-serif;
-        color: #333333;
+      .billShip {
+        width: 100%;
+        height: 25px;
+        background-color: #e7e9eb;
+        border-bottom: 1px solid black;
       }
-      .ft18 {
-        font-size: 13px;
-        font-family: sans-serif;
-        color: #000000;
+      .address {
+        width: 100%;
+        height: 146px;
       }
-      .ft19 {
-        font-size: 11px;
-        font-family: sans-serif;
-        color: #444444;
+      table,
+      th,
+      td {
+        border: 0.5px solid black;
+        border-collapse: collapse;
       }
-      .ft110 {
-        font-size: 90px;
-        font-family: Helvetica;
-        color: #c0c0c0;
+      .tableStyleBorder {
+        border-top-style: solid;
+        border-top-width: 1pt;
+        border-top-color: #000000;
+        border-left-style: solid;
+        border-left-width: 1pt;
+        border-left-color: #000000;
+        border-bottom-style: solid;
+        border-bottom-width: 1pt;
+        border-bottom-color: #000000;
+        border-right-style: solid;
+        border-right-width: 1pt;
+        border-right-color: #000000;
       }
-      .ft111 {
-        font-size: 12px;
-        line-height: 14px;
-        font-family: sans-serif;
-        color: #000000;
+      .s1 {
+        color: black;
+        font-family: Arial, sans-serif;
+        font-style: normal;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 12pt;
       }
-      .ft112 {
-        font-size: 11px;
-        line-height: 15px;
-        font-family: sans-serif;
-        color: #000000;
+      .s2 {
+        color: black;
+        font-family: 'Microsoft Sans Serif', sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        text-decoration: none;
+        font-size: 8pt;
       }
-      .ft113 {
-        font-size: 10px;
-        line-height: 13px;
-        font-family: sans-serif;
-        color: #000000;
+      .s3 {
+        color: black;
+        font-family: 'Microsoft Sans Serif', sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        text-decoration: none;
+        font-size: 22pt;
       }
-      .ft114 {
-        font-size: 11px;
-        line-height: 16px;
-        font-family: sans-serif;
-        color: #000000;
+      .s4 {
+        color: #333;
+        font-family: 'Microsoft Sans Serif', sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        text-decoration: none;
+        font-size: 8pt;
       }
-      .ft115 {
-        font-size: 11px;
-        line-height: 14px;
-        font-family: sans-serif;
-        color: #000000;
+      .s5 {
+        color: black;
+        font-family: Arial, sans-serif;
+        font-style: normal;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 8pt;
+      }
+      .s6 {
+        color: #333;
+        font-family: Arial, sans-serif;
+        font-style: normal;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 8pt;
+      }
+      .s7 {
+        color: black;
+        font-family: Arial, sans-serif;
+        font-style: normal;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 9pt;
+      }
+      .s8 {
+        color: #444;
+        font-family: 'Microsoft Sans Serif', sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        text-decoration: none;
+        font-size: 7.5pt;
+      }
+      .s9 {
+        color: black;
+        font-family: Arial, sans-serif;
+        font-style: italic;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: 8pt;
+      }
+      .s10 {
+        color: black;
+        font-family: 'Microsoft Sans Serif', sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        text-decoration: none;
+        font-size: 6pt;
+      }
+      table,
+      tbody {
+        vertical-align: top;
+        overflow: visible;
       }
     </style>
   </head>
-  <body bgcolor="#A0A0A0" vlink="blue" link="blue">
-    <div
-      id="page1-div"
-      style="position: relative; width: 893px; height: 1262px"
-    >
-      <img
-        width="893"
-        height="1262"
-        src="target001.png"
-        alt="background image"
-      />
-      <p
-        style="
-          position: absolute;
-          top: 1200px;
-          left: 837px;
-          white-space: nowrap;
-        "
-        class="ft10"
-      >
-        1
-      </p>
-      <p
-        style="position: absolute; top: 630px; left: 650px; white-space: nowrap"
-        class="ft11"
-      >
-        Sub Total
-      </p>
-      <p
-        style="position: absolute; top: 630px; left: 794px; white-space: nowrap"
-        class="ft11"
-      >
-        1,825.00
-      </p>
-      <p
-        style="position: absolute; top: 649px; left: 638px; white-space: nowrap"
-        class="ft11"
-      >
-        CGST9 (9%)
-      </p>
-      <p
-        style="position: absolute; top: 649px; left: 804px; white-space: nowrap"
-        class="ft11"
-      >
-        164.25
-      </p>
-      <p
-        style="position: absolute; top: 667px; left: 640px; white-space: nowrap"
-        class="ft11"
-      >
-        SGST9 (9%)
-      </p>
-      <p
-        style="position: absolute; top: 667px; left: 804px; white-space: nowrap"
-        class="ft11"
-      >
-        164.25
-      </p>
-      <p
-        style="position: absolute; top: 685px; left: 671px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Total</b>
-      </p>
-      <p
-        style="position: absolute; top: 685px; left: 787px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>₹2,153.50</b>
-      </p>
-      <p
-        style="position: absolute; top: 800px; left: 619px; white-space: nowrap"
-        class="ft11"
-      >
-        Authorized Signature
-      </p>
-      <p
-        style="position: absolute; top: 642px; left: 68px; white-space: nowrap"
-        class="ft11"
-      >
-        Total In Words
-      </p>
-      <p
-        style="position: absolute; top: 655px; left: 68px; white-space: nowrap"
-        class="ft111"
-      >
-        <b
-          >Indian Rupee Two Thousand One Hundred Fifty-Three and Fifty
-          Paise&#160;<br />Only</b
+  <body style="width: 900px; font-family: sans-serif">
+    <main>
+      <header>
+        <div class="logo">
+          <img
+            style="width: 127px"
+            src="https://cdn.shopify.com/s/files/1/0566/3182/0333/files/LOGO-color.png?v=1647674394"
+            alt="logo"
+          />
+        </div>
+        <div class="CompanyInfo">
+          <p style="font-size: 21px; font-weight: bolder">
+            Depo Solutions Private Limited
+          </p>
+          <p>77/1/A, Christopher Road, Topsia,</p>
+          <p>Kolkata - 700046</p>
+          <p>West Bengal</p>
+          <p>GSTIN: 19AAJCD1058P1Z4</p>
+        </div>
+        <div class="perfor">Proforma Invoice</div>
+      </header>
+      <div class="billID">
+        <p style="position: absolute; left: 56px">#</p>
+        <p style="position: absolute; left: 276px">: DEPO/KOL/PI/000007</p>
+        <p style="position: absolute; top: 284px; left: 56px">Estimate Date</p>
+        <p style="position: absolute; top: 284px; left: 276px">: 30/01/2023</p>
+        <div class="verticalLine"></div>
+        <p style="position: absolute; left: 509px">Place Of Supply</p>
+        <p style="position: absolute; left: 752px">: West Bengal (19)</p>
+      </div>
+      <div class="billShip">
+        <p style="position: absolute; left: 56px">Bill To</p>
+        <p style="position: absolute; left: 509px">Ship To</p>
+      </div>
+      <div class="address">
+        <div
+          style="position: absolute; top: 349px; left: 56px; line-height: 1.6"
         >
-      </p>
-      <p
-        style="position: absolute; top: 714px; left: 68px; white-space: nowrap"
-        class="ft11"
-      >
-        Looking forward for your business.
-      </p>
-      <p
-        style="position: absolute; top: 126px; left: 263px; white-space: nowrap"
-        class="ft14"
-      >
-        <b>Depo Solutions Private Limited</b>
-      </p>
-      <p
-        style="position: absolute; top: 152px; left: 263px; white-space: nowrap"
-        class="ft113"
-      >
-        77/1/A, Christopher Road, Topsia,<br />Kolkata - 700046<br />West
-        Bengal<br />GSTIN: 19AAJCD1058P1Z4
-      </p>
-      <p
-        style="position: absolute; top: 215px; left: 587px; white-space: nowrap"
-        class="ft15"
-      >
-        Proforma Invoice
-      </p>
-      <p
-        style="position: absolute; top: 258px; left: 249px; white-space: nowrap"
-        class="ft11"
-      >
-        &#160;
-      </p>
-      <p
-        style="position: absolute; top: 258px; left: 440px; white-space: nowrap"
-        class="ft11"
-      >
-        &#160;
-      </p>
-      <p
-        style="position: absolute; top: 259px; left: 66px; white-space: nowrap"
-        class="ft16"
-      >
-        #
-      </p>
-      <p
-        style="position: absolute; top: 259px; left: 257px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>: DEPO/KOL/PI/000007</b>
-      </p>
-      <p
-        style="position: absolute; top: 274px; left: 249px; white-space: nowrap"
-        class="ft11"
-      >
-        &#160;
-      </p>
-      <p
-        style="position: absolute; top: 275px; left: 66px; white-space: nowrap"
-        class="ft16"
-      >
-        Estimate Date
-      </p>
-      <p
-        style="position: absolute; top: 275px; left: 257px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>: 30/01/2023</b>
-      </p>
-      <p
-        style="position: absolute; top: 258px; left: 644px; white-space: nowrap"
-        class="ft11"
-      >
-        &#160;
-      </p>
-      <p
-        style="position: absolute; top: 259px; left: 461px; white-space: nowrap"
-        class="ft16"
-      >
-        Place Of Supply
-      </p>
-      <p
-        style="position: absolute; top: 259px; left: 652px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>: West Bengal (19)</b>
-      </p>
-      <p
-        style="position: absolute; top: 304px; left: 66px; white-space: nowrap"
-        class="ft17"
-      >
-        <b>Bill To</b>
-      </p>
-      <p
-        style="position: absolute; top: 304px; left: 461px; white-space: nowrap"
-        class="ft17"
-      >
-        <b>Ship To</b>
-      </p>
-      <p
-        style="position: absolute; top: 326px; left: 66px; white-space: nowrap"
-        class="ft18"
-      >
-        <b>DEPO SOLUTIONS PRIVATE LIMITED</b>
-      </p>
-      <p
-        style="position: absolute; top: 345px; left: 66px; white-space: nowrap"
-        class="ft114"
-      >
-        77/1/A, Christopher Road, Topsia<br />Topsia<br />Kolkata - 700046<br />West
-        Bengal<br />GSTIN: 19AAJCD1058P1Z4
-      </p>
-      <p
-        style="position: absolute; top: 327px; left: 461px; white-space: nowrap"
-        class="ft114"
-      >
-        DEPO SOLUTIONS PRIVATE LIMITED<br />77/1/A, Christopher Road, Topsia<br />Topsia<br />Kolkata
-        - 700046<br />West Bengal<br />GSTIN: 19AAJCD1058P1Z4
-      </p>
-      <p
-        style="position: absolute; top: 463px; left: 71px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>#</b>
-      </p>
-      <p
-        style="position: absolute; top: 463px; left: 99px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Item &amp; Description</b>
-      </p>
-      <p
-        style="position: absolute; top: 448px; left: 265px; white-space: nowrap"
-        class="ft115"
-      >
-        <b>HSN<br />/SAC</b>
-      </p>
-      <p
-        style="position: absolute; top: 463px; left: 351px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Qty</b>
-      </p>
-      <p
-        style="position: absolute; top: 463px; left: 410px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Rate</b>
-      </p>
-      <p
-        style="position: absolute; top: 448px; left: 457px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Discoun</b>
-      </p>
-      <p
-        style="position: absolute; top: 463px; left: 497px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>t</b>
-      </p>
-      <p
-        style="position: absolute; top: 445px; left: 561px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>CGST</b>
-      </p>
-      <p
-        style="position: absolute; top: 445px; left: 692px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>SGST</b>
-      </p>
-      <p
-        style="position: absolute; top: 463px; left: 795px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Amount</b>
-      </p>
-      <p
-        style="position: absolute; top: 464px; left: 559px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>%</b>
-      </p>
-      <p
-        style="position: absolute; top: 464px; left: 611px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Amt</b>
-      </p>
-      <p
-        style="position: absolute; top: 464px; left: 689px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>%</b>
-      </p>
-      <p
-        style="position: absolute; top: 464px; left: 741px; white-space: nowrap"
-        class="ft12"
-      >
-        <b>Amt</b>
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 72px; white-space: nowrap"
-        class="ft11"
-      >
-        1
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 96px; white-space: nowrap"
-        class="ft113"
-      >
-        Magmus 3&#34; Brass Locking L&#160;<br />Hinges Satin Silver
-        Premium&#160;<br />3&#34; x 3/8 x 1.1/4 x 12 mm
-      </p>
-      <p
-        style="position: absolute; top: 523px; left: 96px; white-space: nowrap"
-        class="ft19"
-      >
-        SKU : MAG-100472.05
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 262px; white-space: nowrap"
-        class="ft113"
-      >
-        830210<br />20
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 351px; white-space: nowrap"
-        class="ft11"
-      >
-        5.00
-      </p>
-      <p
-        style="position: absolute; top: 495px; left: 356px; white-space: nowrap"
-        class="ft11"
-      >
-        Pcs
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 403px; white-space: nowrap"
-        class="ft11"
-      >
-        250.00
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 465px; white-space: nowrap"
-        class="ft11"
-      >
-        50.00%
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 553px; white-space: nowrap"
-        class="ft11"
-      >
-        9%
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 605px; white-space: nowrap"
-        class="ft11"
-      >
-        56.25
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 683px; white-space: nowrap"
-        class="ft11"
-      >
-        9%
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 736px; white-space: nowrap"
-        class="ft11"
-      >
-        56.25
-      </p>
-      <p
-        style="position: absolute; top: 481px; left: 806px; white-space: nowrap"
-        class="ft11"
-      >
-        625.00
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 72px; white-space: nowrap"
-        class="ft11"
-      >
-        2
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 96px; white-space: nowrap"
-        class="ft113"
-      >
-        Magmus 3&#34; S.S. Butt Door&#160;<br />Hinges - Welded Soft&#160;<br />Movement
-        Matt 3&#34; x 16
-      </p>
-      <p
-        style="position: absolute; top: 596px; left: 96px; white-space: nowrap"
-        class="ft19"
-      >
-        SKU : MAG-100141.00
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 262px; white-space: nowrap"
-        class="ft113"
-      >
-        830210<br />10
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 344px; white-space: nowrap"
-        class="ft11"
-      >
-        10.00
-      </p>
-      <p
-        style="position: absolute; top: 568px; left: 356px; white-space: nowrap"
-        class="ft11"
-      >
-        Pcs
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 403px; white-space: nowrap"
-        class="ft11"
-      >
-        200.00
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 465px; white-space: nowrap"
-        class="ft11"
-      >
-        40.00%
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 553px; white-space: nowrap"
-        class="ft11"
-      >
-        9%
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 598px; white-space: nowrap"
-        class="ft11"
-      >
-        108.00
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 683px; white-space: nowrap"
-        class="ft11"
-      >
-        9%
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 729px; white-space: nowrap"
-        class="ft11"
-      >
-        108.00
-      </p>
-      <p
-        style="position: absolute; top: 554px; left: 797px; white-space: nowrap"
-        class="ft11"
-      >
-        1,200.00
-      </p>
-    </div>
+          <p>Depo Solutions Private Limited</p>
+          <p>77/1/A, Christopher Road, Topsia,</p>
+          <p>Kolkata - 700046</p>
+          <p>West Bengal</p>
+          <p>GSTIN: 19AAJCD1058P1Z4</p>
+        </div>
+        <div
+          style="position: absolute; top: 349px; left: 511px; line-height: 1.6"
+        >
+          <p>Depo Solutions Private Limited</p>
+          <p>77/1/A, Christopher Road, Topsia,</p>
+          <p>Kolkata - 700046</p>
+          <p>West Bengal</p>
+          <p>GSTIN: 19AAJCD1058P1Z4</p>
+        </div>
+      </div>
+
+      <table style="width: 100%">
+        <thead style="background-color: #e7e9eb">
+          <tr>
+            <th class="tableStyleBorder" rowspan="2">#</th>
+            <th class="tableStyleBorder" rowspan="2">Item &amp; Description</th>
+            <th class="tableStyleBorder" rowspan="2">HSN/SAC</th>
+            <th class="tableStyleBorder" rowspan="2">Qty</th>
+            <th class="tableStyleBorder" rowspan="2">Rate</th>
+            <th class="tableStyleBorder" rowspan="2">Discount</th>
+            <th class="tableStyleBorder" colspan="2">CGST</th>
+            <th class="tableStyleBorder" colspan="2">SGST</th>
+            <th class="tableStyleBorder" rowspan="2">Amount</th>
+          </tr>
+          <tr>
+            <th class="tableStyleBorder" >%</th>
+            <th class="tableStyleBorder" >Amt</th>
+            <th class="tableStyleBorder" >%</th>
+            <th class="tableStyleBorder" >Amt</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${getDeliveryItemsHTML(items)}
+        </tbody>
+      </table>
+           <table style="width: 100%">
+        <tr style="height: 40pt">
+          <td
+            style="
+              width: 299pt;
+              border-top-style: solid;
+              border-top-width: 1pt;
+              border-top-color: #000000;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+            colspan="6"
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+            <p
+              class="s2"
+              style="padding-left: 5pt; text-indent: 0pt; text-align: left"
+            >
+              Total In Words
+            </p>
+            <p
+              class="s9"
+              style="padding-left: 5pt; text-indent: 0pt; text-align: left"
+            >
+              Indian Rupee Two Thousand One Hundred Fifty-Three and Fifty Paise
+            </p>
+            <p
+              class="s9"
+              style="
+                padding-left: 5pt;
+                text-indent: 0pt;
+                line-height: 9pt;
+                text-align: left;
+              "
+            >
+              Only
+            </p>
+          </td>
+          <td
+            style="
+              width: 45pt;
+              border-top-style: solid;
+              border-top-width: 1pt;
+              border-top-color: #000000;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+            "
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+          </td>
+          <td
+            style="
+              width: 130pt;
+              border-top-style: solid;
+              border-top-width: 1pt;
+              border-top-color: #000000;
+            "
+            colspan="3"
+          >
+            <p
+              class="s2"
+              style="
+                padding-top: 3pt;
+                padding-left: 45pt;
+                padding-right: 46pt;
+                text-indent: 7pt;
+                line-height: 135%;
+                text-align: left;
+              "
+            >
+              Sub Total
+            </p>
+             <p
+              class="s2"
+              style="padding-left: 42pt; text-indent: 0pt; text-align: left"
+            >
+              CGST (9%)
+            </p>
+            <p
+              class="s2"
+              style="padding-left: 42pt; text-indent: 0pt; text-align: left"
+            >
+              SGST (9%)
+            </p>
+          </td>
+          <td
+            style="
+              width: 52pt;
+              border-top-style: solid;
+              border-top-width: 1pt;
+              border-top-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+          >
+            <p
+              class="s2"
+              style="
+                padding-top: 3pt;
+                padding-right: 4pt;
+                text-indent: 0pt;
+                text-align: right;
+              "
+            >
+              1,825.00
+            </p>
+            <p
+              class="s2"
+              style="
+                padding-top: 3pt;
+                padding-right: 4pt;
+                text-indent: 0pt;
+                text-align: right;
+              "
+            >
+              164.25
+            </p>
+            <p
+              class="s2"
+              style="
+                padding-top: 3pt;
+                padding-right: 4pt;
+                text-indent: 0pt;
+                text-align: right;
+              "
+            >
+              164.25
+            </p>
+          </td>
+        </tr>
+        <tr style="height: 13pt">
+          <td
+            style="
+              width: 299pt;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+            colspan="6"
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+          </td>
+          <td
+            style="
+              width: 45pt;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-bottom-style: solid;
+              border-bottom-width: 1pt;
+              border-bottom-color: #000000;
+            "
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+          </td>
+          <td
+            style="
+              width: 130pt;
+              border-bottom-style: solid;
+              border-bottom-width: 1pt;
+              border-bottom-color: #000000;
+            "
+            colspan="3"
+          >
+            <p
+              class="s5"
+              style="
+                padding-left: 63pt;
+                padding-right: 46pt;
+                text-indent: 0pt;
+                text-align: center;
+              "
+            >
+              Total
+            </p>
+          </td>
+          <td
+            style="
+              width: 52pt;
+              border-bottom-style: solid;
+              border-bottom-width: 1pt;
+              border-bottom-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+          >
+            <p
+              class="s5"
+              style="padding-right: 4pt; text-indent: 0pt; text-align: right"
+            >
+              ₹2,153.50
+            </p>
+          </td>
+        </tr>
+        <tr style="height: 40pt">
+          <td
+            style="
+              width: 299pt;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+            colspan="6"
+          >
+            <p
+              class="s2"
+              style="
+                padding-top: 6pt;
+                padding-left: 5pt;
+                text-indent: 0pt;
+                text-align: left;
+              "
+            >
+              Looking forward for your business.
+            </p>
+          </td>
+          <td
+            style="
+              width: 227pt;
+              border-top-style: solid;
+              border-top-width: 1pt;
+              border-top-color: #000000;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+            colspan="5"
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+          </td>
+        </tr>
+        <tr style="height: 33pt">
+          <td
+            style="
+              width: 299pt;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+            colspan="6"
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+          </td>
+          <td
+            style="
+              width: 227pt;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-bottom-style: solid;
+              border-bottom-width: 1pt;
+              border-bottom-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+            colspan="5"
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+            <p
+              class="s2"
+              style="
+                padding-left: 74pt;
+                text-indent: 0pt;
+                line-height: 8pt;
+                text-align: left;
+              "
+            >
+              Authorized Signature
+            </p>
+          </td>
+        </tr>
+        <tr style="height: 249pt">
+          <td
+            style="
+              width: 526pt;
+              border-left-style: solid;
+              border-left-width: 1pt;
+              border-left-color: #000000;
+              border-bottom-style: solid;
+              border-bottom-width: 1pt;
+              border-bottom-color: #000000;
+              border-right-style: solid;
+              border-right-width: 1pt;
+              border-right-color: #000000;
+            "
+            colspan="11"
+          >
+            <p style="text-indent: 0pt; text-align: left"><br /></p>
+          </td>
+        </tr>
+      </table>
+    </main>
   </body>
 </html>
 
