@@ -15,7 +15,7 @@ module.exports = ({
     let data = '';
     let itemNumber = 1;
     function cgstTaxInd(qty, rate, discount) {
-      const cgstTax = qty * rate * (9 / 100) - discount;
+      const cgstTax = qty * rate * (1 - discount / 100) * (9 / 100);
       return cgstTax;
     }
     for (let item of items) {
