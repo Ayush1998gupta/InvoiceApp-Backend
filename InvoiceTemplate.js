@@ -6,13 +6,19 @@ module.exports = ({
   state,
   zip,
   gstin,
+  estimateDate,
   items,
 }) => {
   const today = new Date();
 
   function getDeliveryItemsHTML(items) {
     let data = '';
-    for (let i = 0; i < 4; i++) {
+    let itemNumber = 1;
+    function cgstTaxInd(qty, rate, discount) {
+      const cgstTax = qty * rate * (9 / 100) - discount;
+      return cgstTax;
+    }
+    for (let item of items) {
       data += `
            <tr style="height: 48pt">
             <td class="tableStyleBorder" style="width: 20pt">
@@ -20,7 +26,7 @@ module.exports = ({
                 class="s2"
                 style="padding-top: 1pt; text-indent: 0pt; text-align: center"
               >
-                2
+                ${itemNumber}
               </p>
             </td>
             <td class="tableStyleBorder" style="width: 111pt">
@@ -34,8 +40,7 @@ module.exports = ({
                   text-align: left;
                 "
               >
-                Magmus 3&quot; S.S. Butt Door Hinges - Welded Soft Movement Matt
-                3&quot; x 16 <span class="s8">SKU : MAG-100141.00</span>
+                ${item.name}
               </p>
             </td>
             <td class="tableStyleBorder" style="width: 39pt">
@@ -48,7 +53,7 @@ module.exports = ({
                   text-align: left;
                 "
               >
-                830210
+               830210
               </p>
               <p
                 class="s2"
@@ -67,7 +72,7 @@ module.exports = ({
                   text-align: left;
                 "
               >
-                10.00
+                ${item.qty}
               </p>
               <p
                 class="s2"
@@ -86,7 +91,7 @@ module.exports = ({
                   text-align: right;
                 "
               >
-                200.00
+                ${item.rate}
               </p>
             </td>
             <td class="tableStyleBorder" style="width: 42pt">
@@ -99,7 +104,7 @@ module.exports = ({
                   text-align: left;
                 "
               >
-                40.00%
+                ${item.discount}%
               </p>
             </td>
             <td class="tableStyleBorder" style="width: 45pt">
@@ -125,7 +130,7 @@ module.exports = ({
                   text-align: right;
                 "
               >
-                108.00
+                ${cgstTaxInd(item.qty, item.rate, item.discount)}
               </p>
             </td>
             <td class="tableStyleBorder" style="width: 43pt">
@@ -151,7 +156,7 @@ module.exports = ({
                   text-align: right;
                 "
               >
-                108.00
+                 ${cgstTaxInd(item.qty, item.rate, item.discount)}
               </p>
             </td>
             <td  class="tableStyleBorder" style="width: 52pt">
@@ -164,14 +169,25 @@ module.exports = ({
                   text-align: right;
                 "
               >
-                1,200.00
+               ${item.qty * item.rate * (1 - item.discount / 100).toFixed(2)}
               </p>
             </td>
           </tr>
     `;
+      itemNumber++;
     }
     return data;
   }
+
+  const totalAmountAfterDiscount = items.reduce(
+    (acc, item) => acc + (item.qty * item.rate * (100 - item.discount)) / 100,
+    0
+  );
+
+  const cgstTax = (totalAmountAfterDiscount * 9) / 100;
+  const sgstTax = (totalAmountAfterDiscount * 9) / 100;
+
+  const total = totalAmountAfterDiscount + cgstTax + sgstTax;
   return `
   <!DOCTYPE html>
 <html lang="en">
@@ -260,7 +276,7 @@ module.exports = ({
         font-style: normal;
         font-weight: bold;
         text-decoration: none;
-        font-size: 12pt;
+        font-size: 14pt;
       }
       .s2 {
         color: black;
@@ -268,7 +284,7 @@ module.exports = ({
         font-style: normal;
         font-weight: normal;
         text-decoration: none;
-        font-size: 8pt;
+        font-size: 10pt;
       }
       .s3 {
         color: black;
@@ -276,7 +292,7 @@ module.exports = ({
         font-style: normal;
         font-weight: normal;
         text-decoration: none;
-        font-size: 22pt;
+        font-size: 24pt;
       }
       .s4 {
         color: #333;
@@ -284,7 +300,7 @@ module.exports = ({
         font-style: normal;
         font-weight: normal;
         text-decoration: none;
-        font-size: 8pt;
+        font-size: 10pt;
       }
       .s5 {
         color: black;
@@ -292,7 +308,7 @@ module.exports = ({
         font-style: normal;
         font-weight: bold;
         text-decoration: none;
-        font-size: 8pt;
+        font-size: 10pt;
       }
       .s6 {
         color: #333;
@@ -300,7 +316,7 @@ module.exports = ({
         font-style: normal;
         font-weight: bold;
         text-decoration: none;
-        font-size: 8pt;
+        font-size: 10pt;
       }
       .s7 {
         color: black;
@@ -308,7 +324,7 @@ module.exports = ({
         font-style: normal;
         font-weight: bold;
         text-decoration: none;
-        font-size: 9pt;
+        font-size: 11pt;
       }
       .s8 {
         color: #444;
@@ -316,7 +332,7 @@ module.exports = ({
         font-style: normal;
         font-weight: normal;
         text-decoration: none;
-        font-size: 7.5pt;
+        font-size: 9.5pt;
       }
       .s9 {
         color: black;
@@ -324,7 +340,7 @@ module.exports = ({
         font-style: italic;
         font-weight: bold;
         text-decoration: none;
-        font-size: 8pt;
+        font-size: 11pt;
       }
       .s10 {
         color: black;
@@ -332,7 +348,7 @@ module.exports = ({
         font-style: normal;
         font-weight: normal;
         text-decoration: none;
-        font-size: 6pt;
+        font-size: 8pt;
       }
       table,
       tbody {
@@ -364,9 +380,9 @@ module.exports = ({
       </header>
       <div class="billID">
         <p style="position: absolute; left: 56px">#</p>
-        <p style="position: absolute; left: 276px">: DEPO/KOL/PI/000007</p>
+        <p style="position: absolute; left: 276px">: DEPO/KOL/PI/${invoiceNumber}</p>
         <p style="position: absolute; top: 284px; left: 56px">Estimate Date</p>
-        <p style="position: absolute; top: 284px; left: 276px">: 30/01/2023</p>
+        <p style="position: absolute; top: 284px; left: 276px">: ${estimateDate}</p>
         <div class="verticalLine"></div>
         <p style="position: absolute; left: 509px">Place Of Supply</p>
         <p style="position: absolute; left: 752px">: West Bengal (19)</p>
@@ -379,20 +395,20 @@ module.exports = ({
         <div
           style="position: absolute; top: 349px; left: 56px; line-height: 1.6"
         >
-          <p>Depo Solutions Private Limited</p>
-          <p>77/1/A, Christopher Road, Topsia,</p>
-          <p>Kolkata - 700046</p>
-          <p>West Bengal</p>
-          <p>GSTIN: 19AAJCD1058P1Z4</p>
+          <p>${companyName.toUpperCase()}</p>
+          <p>${street.charAt(0).toUpperCase() + street.slice(1)}</p>
+          <p>${city.charAt(0).toUpperCase() + city.slice(1)} - ${zip}</p>
+          <p>${state.charAt(0).toUpperCase() + state.slice(1)}</p>
+          <p>GSTIN: ${gstin}</p>
         </div>
         <div
           style="position: absolute; top: 349px; left: 511px; line-height: 1.6"
         >
-          <p>Depo Solutions Private Limited</p>
-          <p>77/1/A, Christopher Road, Topsia,</p>
-          <p>Kolkata - 700046</p>
-          <p>West Bengal</p>
-          <p>GSTIN: 19AAJCD1058P1Z4</p>
+           <p>${companyName.toUpperCase()}</p>
+          <p>${street.charAt(0).toUpperCase() + street.slice(1)}</p>
+          <p>${city.charAt(0).toUpperCase() + city.slice(1)} - ${zip}</p>
+          <p>${state.charAt(0).toUpperCase() + state.slice(1)}</p>
+          <p>GSTIN: ${gstin}</p>
         </div>
       </div>
 
@@ -530,7 +546,7 @@ module.exports = ({
                 text-align: right;
               "
             >
-              1,825.00
+              ${totalAmountAfterDiscount}
             </p>
             <p
               class="s2"
@@ -541,7 +557,7 @@ module.exports = ({
                 text-align: right;
               "
             >
-              164.25
+              ${cgstTax}
             </p>
             <p
               class="s2"
@@ -552,7 +568,7 @@ module.exports = ({
                 text-align: right;
               "
             >
-              164.25
+             ${sgstTax}
             </p>
           </td>
         </tr>
@@ -620,7 +636,7 @@ module.exports = ({
               class="s5"
               style="padding-right: 4pt; text-indent: 0pt; text-align: right"
             >
-              ₹2,153.50
+              ₹${total}
             </p>
           </td>
         </tr>
