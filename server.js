@@ -17,9 +17,10 @@ app.use(cors(corsOptions));
 app.use('/', require('./routes/index'));
 
 //database
+mongoose.set('strictQuery', true);
 mongoose
   .connect(
-    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.gexk8id.mongodb.net/Invoices?retryWrites=true&w=majority`
+    `mongodb+srv://Ayush1gupta:${process.env.MONGO_PASSWORD}@cluster0.gexk8id.mongodb.net/Invoices?retryWrites=true&w=majority`
   )
   .then(() => console.log('database connected successfully'))
   .catch((err) => console.log('error connecting to mongodb', err));
