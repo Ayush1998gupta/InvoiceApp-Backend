@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const inviceController = require('../controller/index');
 
-// @post request to create product
+// @post request to getInvoice
 router.post('/getInvoice', inviceController.getInvoice);
 
 // @get request to get home

@@ -13,9 +13,11 @@ const invoiceSchema = new Schema({
   estimateDate: { type: Date, required: true },
   items: [
     {
-      itemName: { type: String, required: true },
-      quantity: { type: Number, required: true },
-      price: { type: Number, required: true },
+      name: { type: String, required: true },
+      qty: { type: Number, required: true },
+      rate: { type: Number, required: true },
+      discount: { type: Number, required: true },
+      amount: { type: Number, required: true },
     },
   ],
 });
