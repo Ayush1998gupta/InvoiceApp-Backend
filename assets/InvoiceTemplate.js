@@ -357,7 +357,7 @@ module.exports = ({
       }
     </style>
   </head>
-  <body style="width: 900px; font-family: sans-serif">
+  <body style="width: 700px; font-family: sans-serif">
     <main>
       <header>
         <div class="logo">
